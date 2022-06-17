@@ -28,7 +28,7 @@ const createWall = () => {
   wallBody.SetUserData({ type: -1 });
 };
 
-const fruitDefaultY = 204 / Ratio;
+const fruitDefaultY = 150 / Ratio;
 const fruitBodyDef = new b2.BodyDef();
 fruitBodyDef.type = b2.dynamicBody;
 fruitBodyDef.position.Set(Width / 2 / Ratio, fruitDefaultY);
@@ -46,6 +46,49 @@ let fruitId = 0;
 const fruits: {[key: string]: {body: b2Body, sprite: Sprite}} = {};
 const contactedFruits = new Map<number, number>();
 const mergingFruitSet = new Set();
+const createSprite = (type: number, x = -299, y = -299) => {
+  const fruit = Fruits[type];
+  const sprite = new Sprite();
+  sprite.anchor.set(0.5);
+  sprite.x = x;
+  sprite.y = y;
+  sprite.texture = Loader.shared.resources[fruit.name].texture!;
+  sprite.scale.set(fruit.radius / fruit.imgRadius);
+  return sprite;
+};
+const currentNextFruit = {
+  current: 0,
+  next: 0,
+};
+let currentFruitSprite: Sprite;
+let nextFruitSprite: Sprite;
+const setCurrentNextFruit = () => {
+  let currentFruit = 0;
+  let nextFruit = 0;
+  Object.defineProperty(currentNextFruit, 'current', {
+    get() {
+      return currentFruit;
+    },
+    set(value) {
+      currentFruit = value;
+      const fruit = Fruits[value];
+      currentFruitSprite.texture = Loader.shared.resources[fruit.name].texture!;
+      currentFruitSprite.scale.set(fruit.radius / fruit.imgRadius);
+    },
+  });
+  Object.defineProperty(currentNextFruit, 'next', {
+    get() {
+      return nextFruit;
+    },
+    set(value) {
+      nextFruit = value;
+      const fruit = Fruits[value];
+      nextFruitSprite.texture = Loader.shared.resources[fruit.name].texture!;
+      nextFruitSprite.scale.set(fruit.radius / fruit.imgRadius);
+    },
+  });
+};
+setCurrentNextFruit();
 const createFruit = (id: number, x = Width / 2) => {
   let newX = x;
   if (x < 5) newX = 5;
@@ -56,14 +99,14 @@ const createFruit = (id: number, x = Width / 2) => {
   fruitBody.SetPositionXY(newX / Ratio, fruitDefaultY);
   fruitBody.CreateFixture(fruitFixtureDefs[id]);
   fruitBody.SetUserData({ type: id, id: fruitId });
-  const sprite = new Sprite();
-  sprite.anchor.set(0.5);
-  sprite.x = -299;
-  sprite.y = -299;
-  sprite.texture = Loader.shared.resources[fruit.name].texture!;
-  sprite.scale.set(fruit.radius / Fruits[id].imgRadius);
+  const sprite = createSprite(id);
   app.stage.addChild(sprite);
   fruits[fruitId++] = { body: fruitBody, sprite };
+  currentNextFruit.current = currentNextFruit.next;
+  if (fruitId < 4) currentNextFruit.next = Math.floor(Math.random() * 2);
+  else if (fruitId < 8) currentNextFruit.next = Math.floor(Math.random() * 3);
+  else if (fruitId < 16) currentNextFruit.next = Math.round(Math.random() * 3.5);
+  else currentNextFruit.next = Math.round(Math.random() * 4);
 };
 
 const animationFruits = [];
@@ -113,22 +156,36 @@ const loop = () => {
 };
 
 const rootElement = document.getElementById('root')!;
+let lastClickTime = 0;
+const tooFrequent = () => {
+  const now = new Date().getTime();
+  if (now - lastClickTime < 100) return true;
+  lastClickTime = now;
+  return false;
+};
 
 export const init = () => {
   const canvas = document.getElementsByTagName('canvas')[0];
   canvas.addEventListener('touchend', (event) => {
+    if (tooFrequent()) return;
     const { changedTouches } = event;
     if (changedTouches.length !== 1) return;
     const left = parseFloat(getComputedStyle(rootElement).marginLeft);
     const { clientX } = changedTouches[0];
-    createFruit(0, (clientX - left) / 0.625);
+    // @ts-ignore
+    createFruit(currentNextFruit.current, (clientX - left) / parseFloat(rootElement.childNodes[0].style.transform.slice(6)));
   });
   canvas.addEventListener('click', (event) => {
     if ('ontouchend' in window) return;
+    if (tooFrequent()) return;
     const { offsetX } = event;
-    createFruit(Math.floor(3.99 * Math.random()), offsetX);
+    createFruit(currentNextFruit.current, offsetX);
   });
   createWall();
+  currentFruitSprite = createSprite(currentNextFruit.current, Width / 2, fruitDefaultY * Ratio);
+  nextFruitSprite = createSprite(currentNextFruit.next, Width / 2, 0);
+  app.stage.addChild(currentFruitSprite);
+  app.stage.addChild(nextFruitSprite);
 
   b2.ContactListener.prototype.PreSolve = (contact) => {
     const a = contact.GetFixtureA().GetBody().GetUserData();
