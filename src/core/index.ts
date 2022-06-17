@@ -166,6 +166,15 @@ const tooFrequent = () => {
 
 export const init = () => {
   const canvas = document.getElementsByTagName('canvas')[0];
+  canvas.addEventListener('touchmove', (event) => {
+    const { changedTouches } = event;
+    if (changedTouches.length !== 1) return;
+    const left = parseFloat(getComputedStyle(rootElement).marginLeft);
+    const { clientX } = changedTouches[0];
+    // @ts-ignore
+    const newX = (clientX - left) / parseFloat(rootElement.childNodes[0].style.transform.slice(6));
+    currentFruitSprite.x = newX;
+  });
   canvas.addEventListener('touchend', (event) => {
     if (tooFrequent()) return;
     const { changedTouches } = event;
@@ -173,12 +182,21 @@ export const init = () => {
     const left = parseFloat(getComputedStyle(rootElement).marginLeft);
     const { clientX } = changedTouches[0];
     // @ts-ignore
-    createFruit(currentNextFruit.current, (clientX - left) / parseFloat(rootElement.childNodes[0].style.transform.slice(6)));
+    const newX = (clientX - left) / parseFloat(rootElement.childNodes[0].style.transform.slice(6));
+    currentFruitSprite.x = newX;
+    // @ts-ignore
+    createFruit(currentNextFruit.current, newX);
+  });
+  canvas.addEventListener('mousemove', (event) => {
+    if ('ontouchend' in window) return;
+    const { offsetX } = event;
+    currentFruitSprite.x = offsetX;
   });
   canvas.addEventListener('click', (event) => {
     if ('ontouchend' in window) return;
     if (tooFrequent()) return;
     const { offsetX } = event;
+    currentFruitSprite.x = offsetX;
     createFruit(currentNextFruit.current, offsetX);
   });
   createWall();
