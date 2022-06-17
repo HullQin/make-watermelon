@@ -1,9 +1,43 @@
 body {
+  user-select: none;
   margin: 0;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 16px;
+}
+a {
+  position: absolute;
+  top: 24px;
+  left: 10%;
+  text-decoration: none;
+  box-shadow: 0 3px 7px -1px rgb(0 0 0 / 20%), 0 2px 5px -2px rgb(0 0 0 / 20%);
+  color: rgba(0,0,0,.9);
+  line-height: 1.5rem;
+  font-size: .75rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  background-color: rgba(226,232,240,.8);
+  border-radius: 9999px;
+  height: 1.5rem;
+  display: inline-block;
+  transition-duration: .15s;
+  transition-property: color,background-color,border-color,text-decoration-color,fill,stroke,-webkit-text-decoration-color;
+  transition-timing-function: cubic-bezier(.4,0,.2,1);
+}
+a:active {
+  background-color: rgba(203,213,225,.7);
+}
+footer {
+  position: absolute;
+  text-align: center;
+  padding: .5rem;
+  top: 12px;
+  right: 7%;
+  font-size: .75rem;
+  line-height: 1rem;
+  opacity: .2;
 }
 #root {
   margin: 0 auto;
