@@ -1,6 +1,11 @@
-export const Width = 704;
 export const Height = 1408;
-
+let width = 704;
+const { innerWidth, innerHeight } = window;
+if (innerHeight > innerWidth * 1.3) {
+  width = Height * innerWidth / innerHeight;
+  if (width < 320) width = 320;
+}
+export const Width = width;
 export const Ratio = 35;
 export const TimeStep = 1 / 120;
 export const VelocityIterations = 10;
