@@ -4,7 +4,6 @@ body {
   height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: center;
   font-size: 16px;
 }
 a, a:link, a:visited, a:hover, a:active {
@@ -44,6 +43,7 @@ footer {
   opacity: .2;
 }
 #root {
+  margin: 0 auto;
   overflow: hidden;
 }
 canvas {

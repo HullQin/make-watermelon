@@ -1,9 +1,10 @@
-import { Loader } from '@pixi/loaders';
+import pixi from './pixi';
 import { Fruits, Height, Width } from './config';
 import app from './app';
 import { init } from './core';
 import './index.css';
 
+const { Loader } = pixi;
 const images = Fruits.map((i) => i.name);
 const root = document.getElementById('root')!;
 const canvas = app.view;

@@ -1,12 +1,13 @@
-import { Sprite } from '@pixi/sprite';
-import { Loader } from '@pixi/loaders';
-import * as b2 from '../b2';
+import { Sprite as SpriteType } from '@pixi/sprite';
+import pixi from '../pixi';
+import b2 from '../box2d';
 import app from '../app';
 import {
   Ratio, Fruits, PositionIterations, VelocityIterations, TimeStep, Height, Width,
 } from '../config';
 import { b2Body } from '../b2/dynamics/b2_body';
 
+const { Sprite, Loader } = pixi;
 const world = new b2.World({ x: 0, y: 10 });
 
 const createWall = () => {
@@ -43,7 +44,7 @@ const fruitFixtureDefs = Fruits.map((fruit, index) => {
 });
 
 let fruitId = 0;
-const fruits: {[key: string]: {body: b2Body, sprite: Sprite}} = {};
+const fruits: {[key: string]: {body: b2Body, sprite: SpriteType}} = {};
 const contactedFruits = new Map<number, number>();
 const mergingFruitSet = new Set();
 const createSprite = (type: number, x = -299, y = -299) => {
@@ -60,8 +61,8 @@ const currentNextFruit = {
   current: 0,
   next: 0,
 };
-let currentFruitSprite: Sprite;
-let nextFruitSprite: Sprite;
+let currentFruitSprite: SpriteType;
+let nextFruitSprite: SpriteType;
 const setCurrentNextFruit = () => {
   let currentFruit = 0;
   let nextFruit = 0;
