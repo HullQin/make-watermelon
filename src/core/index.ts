@@ -183,7 +183,7 @@ export const init = () => {
     const { clientX } = changedTouches[0];
     // @ts-ignore
     const newX = (clientX - left) / parseFloat(rootElement.childNodes[0].style.transform.slice(6));
-    currentFruitSprite.x = newX;
+    currentFruitSprite.x = Width / 2;
     // @ts-ignore
     createFruit(currentNextFruit.current, newX);
   });
