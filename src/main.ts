@@ -12,9 +12,8 @@ root.appendChild(canvas);
 Loader.shared.add(images).load(init);
 
 const resetSize = () => {
-  canvas.style.width = `${Width}px`;
-  canvas.style.height = `${Height}px`;
   const { innerWidth, innerHeight } = window;
+  document.body.style.height = `${innerHeight}px`;
   if (innerWidth / innerHeight > Width / Height) {
     root.style.height = `${innerHeight}px`;
     root.style.width = `${innerHeight / Height * Width}px`;
@@ -26,6 +25,8 @@ const resetSize = () => {
   }
 };
 
+canvas.style.width = `${Width}px`;
+canvas.style.height = `${Height}px`;
 resetSize();
 
 window.onresize = resetSize;
